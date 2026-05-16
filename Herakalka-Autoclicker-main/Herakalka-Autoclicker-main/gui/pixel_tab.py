@@ -24,11 +24,11 @@ class PixelTab(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout(self)
-        area_group = QGroupBox("Область поиска")
+        area_group = QGroupBox("Search area")
         area_layout = QVBoxLayout()
         area_mode_layout = QHBoxLayout()
-        self.full_screen_radio = QRadioButton("Весь экран")
-        self.custom_area_radio = QRadioButton("Выбранная область")
+        self.full_screen_radio = QRadioButton("Full screen")
+        self.custom_area_radio = QRadioButton("Selected area")
         self.full_screen_radio.setChecked(True)
         area_mode_layout.addWidget(self.full_screen_radio)
         area_mode_layout.addWidget(self.custom_area_radio)
@@ -37,14 +37,14 @@ class PixelTab(QWidget):
         custom_area_layout = QVBoxLayout(self.custom_area_widget)
         custom_area_layout.setContentsMargins(0, 5, 0, 0)
         buttons_layout = QHBoxLayout()
-        self.select_top_left_btn = QPushButton("Захват ЛВ угла (F8)")
-        self.select_bottom_right_btn = QPushButton("Захват ПН угла (F9)")
+        self.select_top_left_btn = QPushButton("Capture top-left corner (F8)")
+        self.select_bottom_right_btn = QPushButton("Capture bottom-right corner (F9)")
         buttons_layout.addWidget(self.select_top_left_btn)
         buttons_layout.addWidget(self.select_bottom_right_btn)
         custom_area_layout.addLayout(buttons_layout)
         coords_layout = QHBoxLayout()
-        self.top_left_label = QLabel("Верхний левый: (не задан)")
-        self.bottom_right_label = QLabel("Правый нижний: (не задан)")
+        self.top_left_label = QLabel("Top-left: (not set)")
+        self.bottom_right_label = QLabel("Bottom-right: (not set)")
         coords_layout.addWidget(self.top_left_label)
         coords_layout.addWidget(self.bottom_right_label)
         custom_area_layout.addLayout(coords_layout)
@@ -54,27 +54,27 @@ class PixelTab(QWidget):
         area_layout.addWidget(self.custom_area_widget)
         area_group.setLayout(area_layout)
         layout.addWidget(area_group)
-        color_group = QGroupBox("Целевой цвет")
+        color_group = QGroupBox("Target color")
         color_layout = QVBoxLayout()
-        self.select_color_btn = QPushButton("Выбрать цвет пипеткой")
+        self.select_color_btn = QPushButton("Pick color with eyedropper")
         color_preview_layout = QHBoxLayout()
         self.color_preview = QLabel(" ")
         self.color_preview.setAutoFillBackground(False)
         self.color_preview.setFixedSize(50, 20)
-        self.color_label = QLabel("Цвет не выбран")
+        self.color_label = QLabel("No color selected")
         color_preview_layout.addWidget(self.color_preview)
         color_preview_layout.addWidget(self.color_label)
         color_layout.addWidget(self.select_color_btn)
         color_layout.addLayout(color_preview_layout)
         color_group.setLayout(color_layout)
         layout.addWidget(color_group)
-        click_group = QGroupBox("Действие при нахождении")
+        click_group = QGroupBox("Action on found")
         click_layout = QVBoxLayout()
-        self.click_pixel_radio = QRadioButton("Кликнуть по найденному пикселю")
-        self.click_cursor_radio = QRadioButton("Кликнуть в текущей позиции курсора")
+        self.click_pixel_radio = QRadioButton("Click found pixel")
+        self.click_cursor_radio = QRadioButton("Click at current cursor position")
         self.click_pixel_radio.setChecked(True)
         interval_layout = QHBoxLayout()
-        interval_layout.addWidget(QLabel("Интервал проверки (ms):"))
+        interval_layout.addWidget(QLabel("Check interval (ms):"))
         self.interval_spinbox = QSpinBox()
         self.interval_spinbox.setRange(10, 60000)
         self.interval_spinbox.setValue(100)
@@ -98,8 +98,8 @@ class PixelTab(QWidget):
             self.color_label.setText(f"RGB: {self.target_color}")
 
     def get_settings(self, for_worker=True):
-        # for_worker=True: возвращает данные, нужные для запуска PixelBot
-        # for_worker=False: возвращает данные для сохранения в config.json
+        # for_worker=True: returns data needed to run PixelBot
+        # for_worker=False: returns data to save into config.json
 
         persistent_settings = {
             'search_mode': 'fullscreen' if self.full_screen_radio.isChecked() else 'custom',
@@ -115,7 +115,7 @@ class PixelTab(QWidget):
 
 
         if not self.target_color:
-            self.main_window.update_status("Ошибка: Целевой цвет не выбран.")
+            self.main_window.update_status("Error: Target color not selected.")
             return None
         final_area = None
         if self.full_screen_radio.isChecked():
@@ -128,11 +128,11 @@ class PixelTab(QWidget):
                 width = abs(self.bottom_right_coord.x - self.top_left_coord.x)
                 height = abs(self.bottom_right_coord.y - self.top_left_coord.y)
                 if width <= 0 or height <= 0:
-                    self.main_window.update_status("Ошибка: Неверные координаты (ширина или высота <= 0).")
+                    self.main_window.update_status("Error: Invalid coordinates (width or height <= 0).")
                     return None
                 final_area = (x, y, width, height)
             else:
-                self.main_window.update_status("Ошибка: Не все углы области поиска заданы.")
+                self.main_window.update_status("Error: Not all search-area corners are set.")
                 return None
         
         return {'search_area': final_area, 'target_color': self.target_color, 
@@ -150,13 +150,13 @@ class PixelTab(QWidget):
         if tl:
 
             self.top_left_coord = pyautogui.Point(tl[0], tl[1])
-            self.top_left_label.setText(f"Верхний левый: {self.top_left_coord}")
+            self.top_left_label.setText(f"Top-left: {self.top_left_coord}")
             
         br = settings.get('bottom_right')
         if br:
 
             self.bottom_right_coord = pyautogui.Point(br[0], br[1])
-            self.bottom_right_label.setText(f"Правый нижний: {self.bottom_right_coord}")
+            self.bottom_right_label.setText(f"Bottom-right: {self.bottom_right_coord}")
 
         color = settings.get('target_color')
         if color:
@@ -184,11 +184,11 @@ class PixelTab(QWidget):
     def start_coord_capture(self, corner):
         if self.capture_timer.isActive(): return
         self.capture_corner = corner; self.countdown = 3
-        self.countdown_label.setText(f"Наведите курсор... {self.countdown}")
+        self.countdown_label.setText(f"Move cursor... {self.countdown}")
         self.main_window.set_ui_enabled(False); self.capture_timer.start()
     def update_capture_countdown(self):
         self.countdown -= 1
-        self.countdown_label.setText(f"Наведите курсор... {self.countdown}")
+        self.countdown_label.setText(f"Move cursor... {self.countdown}")
         if self.countdown <= 0:
             self.capture_timer.stop()
             self.capture_coord(self.capture_corner)
@@ -196,8 +196,8 @@ class PixelTab(QWidget):
             self.main_window.set_ui_enabled(True)
     def capture_coord(self, corner):
         pos = pyautogui.position()
-        if corner == 'top_left': self.top_left_coord = pos; self.top_left_label.setText(f"Верхний левый: {pos}")
-        else: self.bottom_right_coord = pos; self.bottom_right_label.setText(f"Правый нижний: {pos}")
+        if corner == 'top_left': self.top_left_coord = pos; self.top_left_label.setText(f"Top-left: {pos}")
+        else: self.bottom_right_coord = pos; self.bottom_right_label.setText(f"Bottom-right: {pos}")
     def select_target_color(self):
         dialog = QColorDialog(self)
         dialog.setOption(QColorDialog.ColorDialogOption.ShowAlphaChannel, False)

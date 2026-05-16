@@ -10,10 +10,10 @@ class MinecraftClicker(BaseWorker):
         self.interval_sec = max(0.001, interval_ms / 1000.0)
         self.humanize = humanize
         self.mouse = MouseController()
-        self.button = Button.left if button_str.lower() == 'лкм' else Button.right
+        self.button = Button.left if button_str.lower() == 'lmb' else Button.right
         
     def run(self):
-        self.status_update.emit("Minecraft кликер запущен...")
+        self.status_update.emit("Minecraft clicker started...")
         
 
         pyautogui.PAUSE = 0

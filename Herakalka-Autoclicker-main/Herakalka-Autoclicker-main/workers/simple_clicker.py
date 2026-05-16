@@ -9,17 +9,17 @@ class SimpleClicker(BaseWorker):
         super().__init__()
         self.interval_ms = interval_ms
         self.button_str = button
-        self.button_to_press = self._get_button_object(button)
+        self.button_to_press = self._get_button_object(self.button_str)
         self.is_hold = is_hold
         self.click_points = click_points
         self.mouse = MouseController()
         self.keyboard = KeyboardController()
-        self.is_mouse_button = self.button_str in ['ЛКМ', 'ПКМ', 'СКМ']
+        self.is_mouse_button = self.button_str in ['LMB', 'RMB', 'MMB']
 
     def _get_button_object(self, button_str):
-        if button_str == 'ЛКМ': return Button.left
-        elif button_str == 'ПКМ': return Button.right
-        elif button_str == 'СКМ': return Button.middle
+        if button_str == 'LMB': return Button.left
+        elif button_str == 'RMB': return Button.right
+        elif button_str == 'MMB': return Button.middle
         else:
             if not button_str:
                 return None
@@ -27,16 +27,16 @@ class SimpleClicker(BaseWorker):
             except KeyError: return button_str
 
     def run(self):
-        self.status_update.emit("Простой кликер запущен...")
+        self.status_update.emit("Simple clicker started...")
         
         if self.is_hold:
             if self.button_to_press is None:
-                self.status_update.emit("Ошибка: не выбрана клавиша для зажатия.")
+                self.status_update.emit("Error: no key selected for hold.")
                 return
 
             if self.is_mouse_button: self.mouse.press(self.button_to_press)
             else: self.keyboard.press(self.button_to_press)
-            self.status_update.emit(f"Клавиша '{self.button_str}' зажата...")
+            self.status_update.emit(f"Key '{self.button_str}' held...")
             while self._is_running: self.msleep(100)
             if self.is_mouse_button: self.mouse.release(self.button_to_press)
             else: self.keyboard.release(self.button_to_press)
@@ -61,7 +61,7 @@ class SimpleClicker(BaseWorker):
                 self.msleep_while_running(self.interval_ms)
         else:
             if self.button_to_press is None:
-                self.status_update.emit("Ошибка: не выбрана клавиша для нажатия.")
+                self.status_update.emit("Error: no key selected for press.")
                 return
 
             while self._is_running:

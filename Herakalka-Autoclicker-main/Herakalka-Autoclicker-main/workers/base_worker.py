@@ -14,7 +14,7 @@ class BaseWorker(QThread):
         pass
 
     def stop(self):
-        self.status_update.emit("Остановка...")
+        self.status_update.emit("Stopping...")
         self._is_running = False
 
     def msleep_while_running(self, ms):
