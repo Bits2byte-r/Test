@@ -18,27 +18,27 @@ class MacroWorker(BaseWorker):
     def run(self):
         
         if self.mode == 'record':
-            self.status_update.emit("Запись макроса началась... (нажмите hotkey для остановки)")
+            self.status_update.emit("Macro recording started... (press hotkey to stop)")
             self.record_macro()
-            self.status_update.emit("Запись макроса завершена.")
+            self.status_update.emit("Macro recording finished.")
         elif self.mode == 'play':
             if self.macro_file:
                 try:
                     with open(self.macro_file, 'r') as f:
                         self.events = json.load(f)
                 except Exception as e:
-                    self.status_update.emit(f"Ошибка загрузки макроса: {e}")
+                    self.status_update.emit(f"Macro load error: {e}")
                     return
 
             if not self.events:
-                self.status_update.emit("Нет событий для воспроизведения.")
+                self.status_update.emit("No events to play back.")
                 return
 
-            self.status_update.emit("Воспроизведение макроса...")
+            self.status_update.emit("Playing macro...")
             self.play_macro()
-            self.status_update.emit("Воспроизведение завершено.")
+            self.status_update.emit("Playback finished.")
         else:
-            self.status_update.emit("Режим не выбран (ошибка).")
+            self.status_update.emit("No mode selected (error).")
 
     def record_macro(self):
         self.events = []

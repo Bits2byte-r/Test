@@ -21,32 +21,32 @@ class MacroTab(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout(self)
-        list_group = QGroupBox("Управление макросами")
+        list_group = QGroupBox("Macro management")
         list_layout = QVBoxLayout()
         self.macro_list_widget = QListWidget()
         list_layout.addWidget(self.macro_list_widget)
         list_buttons_layout = QHBoxLayout()
-        self.delete_macro_btn = QPushButton("Удалить выбранный")
+        self.delete_macro_btn = QPushButton("Delete selected")
         list_buttons_layout.addWidget(self.delete_macro_btn)
         list_layout.addLayout(list_buttons_layout)
         list_group.setLayout(list_layout)
         layout.addWidget(list_group)
-        playback_group = QGroupBox("Настройки воспроизведения")
+        playback_group = QGroupBox("Playback settings")
         playback_layout = QVBoxLayout()
-        self.humanize_checkbox = QCheckBox("Воспроизводить с 'человеческими' неточностями")
+        self.humanize_checkbox = QCheckBox("Play with human-like imperfections")
         self.humanize_checkbox.setChecked(True)
         playback_layout.addWidget(self.humanize_checkbox)
         repeat_layout = QHBoxLayout()
-        repeat_layout.addWidget(QLabel("Повторить:"))
+        repeat_layout.addWidget(QLabel("Repeat:"))
         self.repeat_count_spinbox = QSpinBox()
         self.repeat_count_spinbox.setRange(0, 999)
-        self.repeat_count_spinbox.setToolTip("0 = бесконечно")
+        self.repeat_count_spinbox.setToolTip("0 = infinite")
         self.repeat_count_spinbox.setValue(1)
         repeat_layout.addWidget(self.repeat_count_spinbox)
-        repeat_layout.addWidget(QLabel("раз (0 - бесконечно)"))
+        repeat_layout.addWidget(QLabel("times (0 - infinite)"))
         playback_layout.addLayout(repeat_layout)
         speed_layout = QHBoxLayout()
-        speed_layout.addWidget(QLabel("Скорость:"))
+        speed_layout.addWidget(QLabel("Speed:"))
         self.speed_slider = QSlider(Qt.Orientation.Horizontal)
         self.speed_slider.setRange(0, 8)
         self.speed_slider.setValue(3)
@@ -57,26 +57,26 @@ class MacroTab(QWidget):
         playback_layout.addLayout(speed_layout)
         playback_group.setLayout(playback_layout)
         layout.addWidget(playback_group)
-        record_group = QGroupBox("Запись нового макроса")
+        record_group = QGroupBox("Record new macro")
         record_layout = QVBoxLayout()
-        self.record_status_label = QLabel("Статус: Ожидание")
+        self.record_status_label = QLabel("Status: Idle")
         record_layout.addWidget(self.record_status_label)
         name_layout = QHBoxLayout()
-        name_layout.addWidget(QLabel("Имя файла:"))
+        name_layout.addWidget(QLabel("File name:"))
         self.macro_name_input = QLineEdit()
-        self.macro_name_input.setPlaceholderText("например, my_macro")
+        self.macro_name_input.setPlaceholderText("e.g., my_macro")
         name_layout.addWidget(self.macro_name_input)
         name_layout.addWidget(QLabel(".json"))
         record_layout.addLayout(name_layout)
         record_buttons_layout = QHBoxLayout()
-        self.preview_btn = QPushButton("Воспроизвести записанное")
+        self.preview_btn = QPushButton("Play recorded")
         self.preview_btn.setEnabled(False)
-        self.save_btn = QPushButton("Сохранить записанное")
+        self.save_btn = QPushButton("Save recorded")
         self.save_btn.setEnabled(False)
         record_buttons_layout.addWidget(self.preview_btn)
         record_buttons_layout.addWidget(self.save_btn)
         record_layout.addLayout(record_buttons_layout)
-        record_layout.addWidget(QLabel("Запись/Воспроизведение файла контролируется горячей клавишей."))
+        record_layout.addWidget(QLabel("Record/playback is controlled by the hotkey."))
         record_group.setLayout(record_layout)
         layout.addWidget(record_group)
         layout.addStretch(1)
@@ -98,7 +98,7 @@ class MacroTab(QWidget):
         self.macro_name_input.blockSignals(False)
         
 
-        self.record_status_label.setText(f"Статус: Выбран '{item.text()}' для воспр.")
+        self.record_status_label.setText(f"Status: Selected '{item.text()}' for playback.")
 
     def on_record_name_typed(self, text):
 
@@ -108,7 +108,7 @@ class MacroTab(QWidget):
             self.macro_list_widget.blockSignals(False)
         
 
-        self.record_status_label.setText("Статус: Ожидание")
+        self.record_status_label.setText("Status: Idle")
 
     def get_settings(self):
         record_name = self.macro_name_input.text().strip()
@@ -157,16 +157,16 @@ class MacroTab(QWidget):
         selected_items = self.macro_list_widget.selectedItems()
         if not selected_items: return
         item = selected_items[0]; filename = item.text()
-        reply = QMessageBox.question(self, "Удаление макроса", f"Вы уверены, что хотите удалить файл '{filename}'?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        reply = QMessageBox.question(self, "Delete macro", f"Are you sure you want to delete file '{filename}'?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
             try:
                 os.remove(os.path.join(MACRO_DIR, filename))
                 self.macro_list_widget.takeItem(self.macro_list_widget.row(item))
-            except OSError as e: QMessageBox.warning(self, "Ошибка", f"Не удалось удалить файл: {e}")
+            except OSError as e: QMessageBox.warning(self, "Error", f"Could not delete file: {e}")
             
     def on_record_finished(self, events):
         self.recorded_events = events
-        self.record_status_label.setText(f"Записано {len(events)} событий. Готово к сохранению/просмотру.")
+        self.record_status_label.setText(f"Recorded {len(events)} events. Ready to save/preview.")
         self.preview_btn.setEnabled(True); self.save_btn.setEnabled(True)
         
     def preview_recorded_macro(self):
@@ -174,12 +174,12 @@ class MacroTab(QWidget):
         
     def save_recorded_macro(self):
         record_name = self.macro_name_input.text().strip()
-        if not record_name: QMessageBox.warning(self, "Ошибка", "Введите имя файла для сохранения макроса."); return
-        if not self.recorded_events: QMessageBox.warning(self, "Ошибка", "Нет записанных событий для сохранения."); return
+        if not record_name: QMessageBox.warning(self, "Error", "Enter a file name to save the macro."); return
+        if not self.recorded_events: QMessageBox.warning(self, "Error", "No recorded events to save."); return
         macro_path = os.path.join(MACRO_DIR, record_name + ".json")
         try:
             with open(macro_path, 'w') as f: json.dump(self.recorded_events, f, indent=4)
-            QMessageBox.information(self, "Успех", f"Макрос сохранен в {macro_path}")
-            self.load_macros(); self.recorded_events = []; self.record_status_label.setText("Статус: Ожидание")
+            QMessageBox.information(self, "Success", f"Macro saved to {macro_path}")
+            self.load_macros(); self.recorded_events = []; self.record_status_label.setText("Status: Idle")
             self.preview_btn.setEnabled(False); self.save_btn.setEnabled(False)
-        except Exception as e: QMessageBox.critical(self, "Ошибка сохранения", str(e))
+        except Exception as e: QMessageBox.critical(self, "Save error", str(e))

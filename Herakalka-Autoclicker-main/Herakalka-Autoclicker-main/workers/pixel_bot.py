@@ -13,7 +13,7 @@ class PixelBot(BaseWorker):
         self.mouse = MouseController()
 
     def run(self):
-        self.status_update.emit("Пиксельный бот запущен...")
+        self.status_update.emit("Pixel bot started...")
         while self._is_running:
             try:
                 screenshot = pyautogui.screenshot(region=self.search_area)
@@ -36,7 +36,7 @@ class PixelBot(BaseWorker):
 
                 
             except Exception as e:
-                self.status_update.emit(f"Ошибка в пиксельном боте: {e}")
+                self.status_update.emit(f"Pixel bot error: {e}")
                 self.stop()
             
             self.msleep_while_running(self.interval_ms)

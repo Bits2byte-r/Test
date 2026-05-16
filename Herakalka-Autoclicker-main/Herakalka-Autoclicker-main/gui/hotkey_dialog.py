@@ -7,11 +7,11 @@ class HotkeyDialog(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Назначить горячую клавишу")
+        self.setWindowTitle("Assign hotkey")
         self.setFixedSize(300, 150)
         self.layout = QVBoxLayout(self)
 
-        self.info_label = QLabel("Нажмите комбинацию клавиш или кнопку мыши...")
+        self.info_label = QLabel("Press a key combo or mouse button...")
         self.info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.info_label)
 
@@ -20,7 +20,7 @@ class HotkeyDialog(QDialog):
         self.current_hotkey_label.setStyleSheet("font-size: 14pt; font-weight: bold; color: #88c0d0;")
         self.layout.addWidget(self.current_hotkey_label)
 
-        self.save_button = QPushButton("Сохранить")
+        self.save_button = QPushButton("Save")
         self.save_button.clicked.connect(self.accept)
         self.layout.addWidget(self.save_button)
 
@@ -52,9 +52,9 @@ class HotkeyDialog(QDialog):
         self.is_mouse_hotkey = True
         
         button_map = {
-            Qt.MouseButton.LeftButton: ("mouse.left", "ЛКМ"),
-            Qt.MouseButton.RightButton: ("mouse.right", "ПКМ"),
-            Qt.MouseButton.MiddleButton: ("mouse.middle", "СКМ"),
+            Qt.MouseButton.LeftButton: ("mouse.left", "LMB"),
+            Qt.MouseButton.RightButton: ("mouse.right", "RMB"),
+            Qt.MouseButton.MiddleButton: ("mouse.middle", "MMB"),
             Qt.MouseButton.XButton1: ("mouse.x1", "Mouse 4"),
             Qt.MouseButton.XButton2: ("mouse.x2", "Mouse 5"),
         }
@@ -77,8 +77,8 @@ class HotkeyDialog(QDialog):
         if key in key_map:
             return key_map[key]
 
-        # Для всех остальных клавиш (буквы, цифры, символы)
-        # используем QKeySequence.toString(), чтобы получить символ ('C', 'Ф', '5')
+        # For all other keys (letters, numbers, symbols)
+        # use QKeySequence.toString() to get symbol ('C', 'F', '5')
 
         text = QKeySequence(key).toString().lower()
         if text:
